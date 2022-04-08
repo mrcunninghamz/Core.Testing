@@ -5,15 +5,23 @@ using Xunit;
 
 namespace Core.Testing.BaseClasses;
 
-public abstract class BaseTest<TSubject> where TSubject : class
+public abstract class BaseTest<TSubject, TFixture> : IClassFixture<TFixture> 
+    where TSubject : class
+    where TFixture : class
 {
     protected IMapper Mapper => ServiceProvider.GetService<IMapper>();
-        
+    
     protected TSubject TestSubject => ServiceProvider.GetService<TSubject>();
-        
+    
     protected ServiceProvider ServiceProvider;
-
-    protected BaseTest() => SetupProgram();
+    
+    protected TFixture Fixture { get; set; }
+    
+    protected BaseTest(TFixture fixture)
+    {
+        Fixture = fixture;
+        SetupProgram();
+    }
 
     protected virtual void ConfigureServices(IServiceCollection services)
     {

@@ -2,14 +2,19 @@ using System;
 using Core.Testing.BaseClasses;
 using Core.Testing.Tests.Mocks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
 using Xunit;
 
 namespace Core.Testing.Tests.BaseClasses;
 
-public class BaseTestTests : BaseTest<BaseTestTests>
+public class BaseTestTests : BaseTest<BaseTestTests,BaseTestData>
 {
     private Mock<ISeededTestValue> _seededValue;
+    
+    public BaseTestTests(BaseTestData fixture) : base(fixture)
+    {
+    }
 
     protected override void ConfigureServices(IServiceCollection services)
     {
@@ -28,20 +33,26 @@ public class BaseTestTests : BaseTest<BaseTestTests>
     public void Mapper_ValidSetup_MapsSeed()
     {
         // Arrange
-        var seed = Guid.NewGuid().ToString();
-            
-        var test = new Test
-        {
-            Name = "Mapper Test"
-        };
-
+        var seed = Fixture.Seed;
         _seededValue.Setup(x => x.Value).Returns(seed);
-            
+
+        var test = Fixture.TestEntity;
+        
         // Act
         var result = Mapper.Map<TestDto>(test);
-            
+
         // Assert
         Assert.NotNull(result);
         Assert.Equal(seed, result.Random);
     }
+}
+
+public class BaseTestData
+{
+    public Test TestEntity = new Test
+    {
+        Name = "Mapper Test"
+    };
+    
+    public string Seed = Guid.NewGuid().ToString();
 }
