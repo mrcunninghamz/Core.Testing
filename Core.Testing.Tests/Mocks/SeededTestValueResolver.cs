@@ -4,15 +4,15 @@ namespace Core.Testing.Tests.Mocks
 {
     public class SeededTestValueResolver : IValueResolver<Test, TestDto, string>
     {
-        private readonly string _seededTestValue;
+        private readonly ISeededTestValue _seededTestValue;
 
         public SeededTestValueResolver(ISeededTestValue seededTestValue)
         {
-            _seededTestValue = seededTestValue.Value;
+            _seededTestValue = seededTestValue;
         }
         public string Resolve(Test source, TestDto destination, string destMember, ResolutionContext context)
         {
-            return _seededTestValue;
+            return _seededTestValue.Value;
         }
     }
 

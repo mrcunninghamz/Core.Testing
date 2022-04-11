@@ -1,27 +1,23 @@
 using System;
+using AutoFixture;
 using Core.Testing.BaseClasses;
+using Core.Testing.BaseClasses.AutoFixture;
 using Core.Testing.Tests.Mocks;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
 namespace Core.Testing.Tests.BaseClasses;
 
-public class BaseTestTests : BaseTest<SeedService>
+public class AutoFixtureBaseTestTests : Testing.BaseClasses.AutoFixture.BaseTest<SeedService>
 {
     private Mock<ISeededTestValue> _seededValue;
 
-    protected override void ConfigureServices(IServiceCollection services)
+
+    protected override void ConfigureFixture()
     {
         // Create mocks
-        _seededValue = new Mock<ISeededTestValue>();
-        
-        // Add to dependency injection
-        services.AddSingleton(_seededValue.Object);
-        services.AddSingleton<SeededTestValueResolver>();
-        
-        //Run base configuration
-        base.ConfigureServices(services);
+        _seededValue = Fixture.Freeze<Mock<ISeededTestValue>>();
+        Fixture.Freeze<SeededTestValueResolver>();
     }
 
     [Fact]
@@ -29,11 +25,8 @@ public class BaseTestTests : BaseTest<SeedService>
     {
         // Arrange
         var seed = Guid.NewGuid().ToString();
-            
-        var test = new Test
-        {
-            Name = "Mapper Test"
-        };
+
+        var test = Fixture.Create<Test>();
 
         _seededValue.Setup(x => x.Value).Returns(seed);
             
